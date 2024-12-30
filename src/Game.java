@@ -1,3 +1,5 @@
+import javax.swing.JFrame;
+
 public class Game {
 
     public static void main(String[] args) {
@@ -16,6 +18,15 @@ public class Game {
             System.out.println("Tile [1; 1] is wall");
         }
 
+        // Vytvoření okna pro hru
+        JFrame frame = new JFrame("Pacman Game");
+        GamePanel gamePanel = new GamePanel();
+
+        frame.add(gamePanel);
+        frame.setSize(800, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        
 
         // Testování pohybu
         pacman.move(1, 0);
