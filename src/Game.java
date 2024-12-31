@@ -10,7 +10,7 @@ public class Game {
         Pacman pacman = new Pacman(map);
 
         // Vytisknutí mapy před pohybem
-        printMap(map);
+        //printMap(map);
 
         if (map.isWalkable(1, 1)) {
             System.out.println("Tile [1; 1] is walkable");
@@ -20,19 +20,20 @@ public class Game {
 
         // Vytvoření okna pro hru
         JFrame frame = new JFrame("Pacman Game");
-        GamePanel gamePanel = new GamePanel();
+        GamePanel gamePanel = new GamePanel(map);
 
         frame.add(gamePanel);
-        frame.setSize(800, 600);
+        frame.setSize(530, 550);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+        frame.setResizable(false);
         
 
         // Testování pohybu
-        pacman.move(1, 0);
+        //pacman.move(1, 0);
 
         // Vytisknutí mapy po pohybu
-        printMap(map);
+        //printMap(map);
     }
 
     // Pomocná metoda pro vypsání mapy
