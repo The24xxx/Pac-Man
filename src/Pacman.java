@@ -1,45 +1,62 @@
 public class Pacman {
 
-    private int x;
-    private int y;
+    private int pixelX; // Aktuální pixelová X souřadnice
+    private int pixelY; // Aktuální pixelová Y souřadnice
+    private int tileX;  // Dlaždicová X souřadnice
+    private int tileY;  // Dlaždicová Y souřadnice
     private Map map;
-    private String direction;
 
     public Pacman(Map map) {
         this.map = map;
 
-        // Najdi pozici 'P' v mřížce mapy
+        // Najdi výchozí dlaždici 'P'
         for (int y = 0; y < map.getGrid().length; y++) {
             for (int x = 0; x < map.getGrid()[y].length; x++) {
                 if (map.getGrid()[y][x] == 'P') {
-                    this.x = x;
-                    this.y = y;
-                    this.direction = "right"; // výchozí směr
-                    return; // Zastav, jakmile najdeš 'P'
+                    this.tileX = x;
+                    this.tileY = y;
+                    this.pixelX = x * 32;
+                    this.pixelY = y * 32;
+                    return;
                 }
             }
         }
     }
 
-    public void move(int dx, int dy) {
-        int newX = this.x + dx;
-        int newY = this.y + dy;
-    
-        // Zkontroluj, jestli je nové místo průchozí
-        if (map.isWalkable(newX, newY)) {
-            // Vyčisti starou pozici a nastav novou
-            map.setTile(this.x, this.y, ' '); // Vyčisti starou pozici
-            this.x = newX;
-            this.y = newY;
-            map.setTile(this.x, this.y, 'P'); // Nastav novou pozici Pacmana
-        }
+    public void movePixel(int dx, int dy) {
+        this.pixelX += dx;
+        this.pixelY += dy;
+
+        // Aktualizace dlaždicové pozice při dosažení další dlaždice
+        this.tileX = this.pixelX / 32;
+        this.tileY = this.pixelY / 32;
     }
 
-    public int getX() {
-        return x;
+    // Nové metody pro nastavení pixelových souřadnic
+    public void setPixelX(int pixelX) {
+        this.pixelX = pixelX;
+        this.tileX = pixelX / 32; // Aktualizace dlaždicové pozice
     }
 
-    public int getY() {
-        return y;
+    public void setPixelY(int pixelY) {
+        this.pixelY = pixelY;
+        this.tileY = pixelY / 32; // Aktualizace dlaždicové pozice
+    }
+
+    // Gettery pro souřadnice
+    public int getPixelX() {
+        return pixelX;
+    }
+
+    public int getPixelY() {
+        return pixelY;
+    }
+
+    public int getTileX() {
+        return tileX;
+    }
+
+    public int getTileY() {
+        return tileY;
     }
 }

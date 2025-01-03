@@ -7,10 +7,11 @@ public class GamePanel extends JPanel implements KeyListener {
     private Image wallImage;
     private Image pathImage;
     private Map map;
-    private Pacman pacman; // Třída Pacman místo souřadnic
+    private Pacman pacman; // Instance Pacmana
     private int directionX = 0; // Směr pohybu na ose X
     private int directionY = 0; // Směr pohybu na ose Y
     private Timer timer;
+    private final int moveSpeed = 2; // Rychlost pohybu v pixelech
 
     public GamePanel(Map map) {
         this.map = map;
@@ -27,11 +28,11 @@ public class GamePanel extends JPanel implements KeyListener {
         setFocusable(true);
         addKeyListener(this);
 
-        // Vytvoření instanci Pacmana s mapou
+        // Vytvoření instance Pacmana
         pacman = new Pacman(map);
 
         // Časovač pro opakovaný pohyb
-        timer = new Timer(100, e -> movePacman());
+        timer = new Timer(16, e -> movePacman()); // Aktualizace každých 16 ms (~60 FPS)
         timer.start();
     }
 
@@ -41,7 +42,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // Získání gridu z mapy
         char[][] grid = map.getGrid();
-        int tileSize = 32; // Velikost políčka v px
+        int tileSize = 32; // Velikost políčka v pixelech
 
         // Projdi všechny sloupce a řádky gridu
         for (int y = 0; y < grid.length; y++) {
@@ -49,12 +50,9 @@ public class GamePanel extends JPanel implements KeyListener {
                 char tile = grid[y][x];
                 Image img;
 
-                switch (tile) { //rychlejší než if/else
+                switch (tile) {
                     case '#':
                         img = wallImage;
-                        break;
-                    case 'P':
-                        img = pacmanImage;
                         break;
                     default:
                         img = pathImage;
@@ -64,13 +62,36 @@ public class GamePanel extends JPanel implements KeyListener {
                 g.drawImage(img, x * tileSize, y * tileSize, this);
             }
         }
+
+        // Vykreslení Pacmana
+        g.drawImage(pacmanImage, pacman.getPixelX(), pacman.getPixelY(), this);
     }
 
     private void movePacman() {
-        // Používáme třídu Pacman pro pohyb
-        pacman.move(directionX, directionY);
-        repaint();
+        int tileSize = 32;
+        int newPixelX = pacman.getPixelX() + directionX;
+        int newPixelY = pacman.getPixelY() + directionY;
+    
+        // Ověření, zda je průchozí celá hitbox
+        if (map.isWalkable(newPixelX, newPixelY)) {
+            pacman.movePixel(directionX, directionY); // Pohyb Pacmana
+        } else {
+            // Pokus o sklouznutí kolem zdi, pokud je Pacman příliš blízko
+            int tileCenterX = (pacman.getPixelX() / tileSize) * tileSize + tileSize / 2;
+            int tileCenterY = (pacman.getPixelY() / tileSize) * tileSize + tileSize / 2;
+    
+            // Zarovnání na střed, pokud je blízko
+            if (Math.abs(pacman.getPixelX() - tileCenterX) < 5) {
+                pacman.setPixelX(tileCenterX);
+            }
+            if (Math.abs(pacman.getPixelY() - tileCenterY) < 5) {
+                pacman.setPixelY(tileCenterY);
+            }
+        }
+    
+        repaint(); // Aktualizace vykreslení
     }
+    
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -80,18 +101,18 @@ public class GamePanel extends JPanel implements KeyListener {
         switch (key) {
             case KeyEvent.VK_UP:
                 directionX = 0;
-                directionY = -1;
+                directionY = -moveSpeed; // Rychlost v pixelech
                 break;
             case KeyEvent.VK_DOWN:
                 directionX = 0;
-                directionY = 1;
+                directionY = moveSpeed;
                 break;
             case KeyEvent.VK_LEFT:
-                directionX = -1;
+                directionX = -moveSpeed;
                 directionY = 0;
                 break;
             case KeyEvent.VK_RIGHT:
-                directionX = 1;
+                directionX = moveSpeed;
                 directionY = 0;
                 break;
         }
@@ -99,8 +120,9 @@ public class GamePanel extends JPanel implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        directionX = 0;
-        directionY = 0; // Zastav pohyb při uvolnění klávesy
+        // Zastav pohyb při uvolnění klávesy
+        //directionX = 0;
+        //directionY = 0;
     }
 
     @Override
@@ -108,5 +130,3 @@ public class GamePanel extends JPanel implements KeyListener {
         // Nepoužívá se
     }
 }
-
-
