@@ -5,13 +5,20 @@ public class Pacman {
     private Map map;
     private String direction;
 
-
-    public Pacman(Map map) { // počáteční pozice Pacmana
+    public Pacman(Map map) {
         this.map = map;
-        this.x = 7;
-        this.y = 5;
-        this.direction = "right"; //výchozí smě
-        this.map.setTile(this.x, this.y, 'P');
+
+        // Najdi pozici 'P' v mřížce mapy
+        for (int y = 0; y < map.getGrid().length; y++) {
+            for (int x = 0; x < map.getGrid()[y].length; x++) {
+                if (map.getGrid()[y][x] == 'P') {
+                    this.x = x;
+                    this.y = y;
+                    this.direction = "right"; // výchozí směr
+                    return; // Zastav, jakmile najdeš 'P'
+                }
+            }
+        }
     }
 
     public void move(int dx, int dy) {
@@ -20,14 +27,13 @@ public class Pacman {
     
         // Zkontroluj, jestli je nové místo průchozí
         if (map.isWalkable(newX, newY)) {
-            // Nastav novou pozici Pacmana
+            // Vyčisti starou pozici a nastav novou
             map.setTile(this.x, this.y, ' '); // Vyčisti starou pozici
             this.x = newX;
             this.y = newY;
             map.setTile(this.x, this.y, 'P'); // Nastav novou pozici Pacmana
         }
     }
-    
 
     public int getX() {
         return x;
@@ -36,6 +42,4 @@ public class Pacman {
     public int getY() {
         return y;
     }
-
 }
-
