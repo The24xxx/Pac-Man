@@ -23,8 +23,6 @@ public class Map {
             {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', ' ', '#', ' ', '#'},
             {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
         };
-        
-        
     }
 
     public boolean isWalkable(int pixelX, int pixelY) {
@@ -69,6 +67,12 @@ public class Map {
         return grid;
     }
 
-    
+    public void clearTile(int pixelX, int pixelY) {
+        int tileSize = 32;
+        int tileX = pixelX / tileSize;
+        int tileY = pixelY / tileSize;
+        if (grid[tileY][tileX] == ' ') {
+            grid[tileY][tileX] = '.';
+        }
+    }
 }
-

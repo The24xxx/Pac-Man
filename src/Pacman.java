@@ -1,4 +1,5 @@
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 
@@ -10,13 +11,20 @@ public class Pacman {
     private int nextDirectionX;
     private int nextDirectionY;
     private Map map;
-    private final int moveSpeed = 2; // Rychlost pohybu v pixelech
+    private Points pointCounter;
+    private final int moveSpeed = 4; // Rychlost pohybu v pixelech
+    private double rotationAngle = 0; // Úhel rotace Pacmana
 
     public Pacman() {
     }
 
     public Pacman(Map map) {
+        this(map, new Points());
+    }
+
+    public Pacman(Map map, Points pointCounter) {
         this.map = map;
+        this.pointCounter = pointCounter;
         setInitialPosition(map);
     }
 
@@ -60,24 +68,37 @@ public class Pacman {
     }
 
     public void draw(Graphics g, Image pacmanImage) {
-        g.drawImage(pacmanImage, pixelX, pixelY, null);
+        Graphics2D g2d = (Graphics2D) g;
+
+        // Calculate the center of Pacman
+        int centerX = pixelX + pacmanImage.getWidth(null) / 2;
+        int centerY = pixelY + pacmanImage.getHeight(null) / 2;
+
+        // Apply rotation
+        g2d.rotate(rotationAngle, centerX, centerY);
+        g2d.drawImage(pacmanImage, pixelX, pixelY, null);
+        g2d.rotate(-rotationAngle, centerX, centerY); // Reset rotation
     }
 
     public void handleKeyPressed(KeyEvent e) {
         int key = e.getKeyCode();
 
-        // Nastavení směru podle stisknuté klávesy
+        // ovládání, rotace a pohyb Pacmana
         switch (key) {
             case KeyEvent.VK_UP:
+                rotationAngle = -Math.PI / 2; // Up
                 setNextDirection(0, -moveSpeed);
                 break;
             case KeyEvent.VK_DOWN:
+                rotationAngle = Math.PI / 2; // Down
                 setNextDirection(0, moveSpeed);
                 break;
             case KeyEvent.VK_LEFT:
+                rotationAngle = Math.PI; // Left
                 setNextDirection(-moveSpeed, 0);
                 break;
             case KeyEvent.VK_RIGHT:
+                rotationAngle = 0; // Right (default)
                 setNextDirection(moveSpeed, 0);
                 break;
         }
@@ -102,6 +123,10 @@ public class Pacman {
         // Ověření, zda je průchozí celá hitbox
         if (map.isWalkable(newPixelX, newPixelY)) {
             movePixel(directionX, directionY); // Pohyb Pacmana
+            if (map.getTile(pixelX / tileSize, pixelY / tileSize) == ' ') {
+                pointCounter.increment(); // Increment the point counter
+                map.clearTile(pixelX, pixelY); // Clear the tile when Pacman moves over it
+            }
         } else {
             // Pokus o sklouznutí kolem zdi, pokud je Pacman příliš blízko
             int tileCenterX = (pixelX / tileSize) * tileSize + tileSize / 2;

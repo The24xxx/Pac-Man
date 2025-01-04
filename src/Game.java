@@ -6,6 +6,9 @@ public class Game {
         // Instance mapy
         Map map = new Map();
 
+        // Instance počítadla bodů
+        Points pointCounter = new Points();
+
         // Instance Pacmana
         Pacman pacman = new Pacman(map);
 
@@ -14,19 +17,22 @@ public class Game {
 
         if (map.isWalkable(1, 1)) {
             System.out.println("Tile [1; 1] is walkable");
-        } else {
-            System.out.println("Tile [1; 1] is wall");
-        }
+        } 
+
 
         // Vytvoření okna pro hru
         JFrame frame = new JFrame("Pacman Game");
-        GamePanel gamePanel = new GamePanel(map);
+        GamePanel gamePanel = new GamePanel(map, pointCounter);
 
         frame.add(gamePanel);
         frame.setSize(530, 550);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setResizable(false);
+
+        new javax.swing.Timer(200, e -> {
+            System.out.println("Points: " + pointCounter.getPoints());
+        }).start();
         
 
         // Testování pohybu
