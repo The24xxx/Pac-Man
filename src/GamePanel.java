@@ -9,6 +9,8 @@ import javax.swing.Timer;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GamePanel extends JPanel implements KeyListener {
     private Pacman pacman;
@@ -18,12 +20,14 @@ public class GamePanel extends JPanel implements KeyListener {
     private Image pathImage;
     private Image pointImage;
     private Timer gameTimer;
+    private Image ghostBlueImage;
     private BufferedImage offscreenImage;
     private Graphics2D offscreenGraphics;
     private Points pointCounter;
     private long startTime;
     private long elapsedTime;
     private boolean timerStarted = false;
+    private List<Ghosts> ghosts;
 
 
     public GamePanel(Map map, Points pointCounter) {
@@ -35,6 +39,7 @@ public class GamePanel extends JPanel implements KeyListener {
         wallImage = new ImageIcon("I:\\OSU\\Programko\\Pac-Man\\sprites\\wall.png").getImage();
         pathImage = new ImageIcon("I:\\OSU\\Programko\\Pac-Man\\sprites\\path.png").getImage();
         pointImage = new ImageIcon("I:\\OSU\\Programko\\Pac-Man\\sprites\\point.png").getImage();
+        ghostBlueImage = new ImageIcon("I:\\OSU\\Programko\\Pac-Man\\sprites\\ghost_blue.gif").getImage();
 
         // Nastavení barvy pozadí
         this.setBackground(Color.BLACK);
@@ -46,12 +51,21 @@ public class GamePanel extends JPanel implements KeyListener {
         // Vytvoření instance Pacmana
         pacman = new Pacman(map, pointCounter);
 
+        //create ghost instance
+        ghosts = new ArrayList<>();
+        for (int i = 0; i < 4; i++) { //add 4 ghosts
+            ghosts.add(new Ghosts(map, ghostBlueImage));
+        }
+
         // strat timer
         startTime = System.currentTimeMillis();
         
         // Časovač pro opakovaný pohyb
         gameTimer = new Timer(16, e -> {
             pacman.move(map);
+            for (Ghosts ghost : ghosts) {
+                ghost.move();
+            }
             elapsedTime = System.currentTimeMillis() - startTime;
             repaint();
         }); // Aktualizace každých 16 ms (~60 FPS)
@@ -98,6 +112,11 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // Draw Pacman
         pacman.draw(offscreenGraphics, pacmanImage);
+
+        //draw ghosts
+        for (Ghosts ghost : ghosts) {
+            ghost.draw(offscreenGraphics);
+        }
 
         // draw points
         offscreenGraphics.setColor(Color.WHITE);
