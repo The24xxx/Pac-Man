@@ -75,4 +75,16 @@ public class Map {
             grid[tileY][tileX] = '.';
         }
     }
+
+    public int countEmptySpaces() {
+        int count = 0;
+        for (int y = 0; y < grid.length; y++) {
+            for (int x = 0; x < grid[y].length; x++) {
+                if (grid[y][x] == ' ') {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
 }
