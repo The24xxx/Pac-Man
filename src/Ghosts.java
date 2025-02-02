@@ -55,10 +55,9 @@ public class Ghosts {
     private void setInitialPosition(Map map) {
         char[][] grid = map.getGrid();
         int tileSize = 32; // Size of a tile in pixels
-
         for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length; x++) {
-                if (grid[y][x] == ' ') { // Assuming ' ' represents a walkable path
+                if (grid[y][x] == 'G') { // Assuming 'G' represents Ghost's starting position
                     this.pixelX = x * tileSize;
                     this.pixelY = y * tileSize;
                     return;

@@ -1,18 +1,18 @@
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GamePanel extends JPanel implements KeyListener {
+    private static final int TILE_SIZE = 32; // Define the size of each tile
     private Pacman pacman;
     private Map map;
     private Image pacmanImage;
@@ -28,18 +28,18 @@ public class GamePanel extends JPanel implements KeyListener {
     private long elapsedTime;
     private boolean timerStarted = false;
     private List<Ghosts> ghosts;
-
+    private boolean showTextBox = true;  // Flag to show/hide the text box
 
     public GamePanel(Map map, Points pointCounter) {
         this.map = map;
         this.pointCounter = pointCounter;
 
         // Načtení obrázků
-        pacmanImage = new ImageIcon("I:\\OSU\\Programko\\Pac-Man\\sprites\\pacman.gif").getImage();
-        wallImage = new ImageIcon("I:\\OSU\\Programko\\Pac-Man\\sprites\\wall.png").getImage();
-        pathImage = new ImageIcon("I:\\OSU\\Programko\\Pac-Man\\sprites\\path.png").getImage();
-        pointImage = new ImageIcon("I:\\OSU\\Programko\\Pac-Man\\sprites\\point.png").getImage();
-        ghostBlueImage = new ImageIcon("I:\\OSU\\Programko\\Pac-Man\\sprites\\ghost_blue.gif").getImage();
+        pacmanImage = new ImageIcon("sprites\\pacman.gif").getImage();
+        wallImage = new ImageIcon("sprites\\wall.png").getImage();
+        pathImage = new ImageIcon("sprites\\path.png").getImage();
+        pointImage = new ImageIcon("sprites\\point.png").getImage();
+        ghostBlueImage = new ImageIcon("sprites\\ghost_blue.gif").getImage();
 
         // Nastavení barvy pozadí
         this.setBackground(Color.BLACK);
@@ -133,16 +133,44 @@ public class GamePanel extends JPanel implements KeyListener {
             gameTimer.stop();
         }
 
+        if (showTextBox) {
+            // Draw the text box in the middle of the game map
+            int boxWidth = 300;
+            int boxHeight = 100;
+            int x = (getWidth() - boxWidth) / 2;
+            int y = (getHeight() - boxHeight) / 2;
+
+            offscreenGraphics.setColor(Color.BLACK);
+            offscreenGraphics.fillRect(x, y, boxWidth, boxHeight);
+
+            offscreenGraphics.setColor(Color.WHITE);
+            offscreenGraphics.drawRect(x, y, boxWidth, boxHeight);
+
+            offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(24f)); // Set font size to 24
+            offscreenGraphics.drawString("Pac-Man", x + 100, y + 50);
+    
+            // Reset font size back to 12f for other text
+            offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(12f));
+            offscreenGraphics.drawString("from Temu", x + 116, y + 70);
+            offscreenGraphics.drawString("Press arrow keys to start", x + 80, y + 90);
+        }
+
         // Draw the offscreen image to the screen
         g.drawImage(offscreenImage, 0, 0, this);
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (!timerStarted) {
-            startTime = System.currentTimeMillis();
-            gameTimer.start();
-            timerStarted = true;
+        // Hide the text box and start the timer when an arrow key is pressed
+        if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN ||
+            e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            if (!timerStarted) {
+                startTime = System.currentTimeMillis();
+                gameTimer.start();
+                timerStarted = true;
+            }
+            showTextBox = false;
+            repaint();
         }
 
         pacman.handleKeyPressed(e);
@@ -156,5 +184,15 @@ public class GamePanel extends JPanel implements KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {
         // Nepoužívá se
+    }
+
+    public void updateGame() {
+        // Game update logic
+        pacman.move(map);
+        for (Ghosts ghost : ghosts) {
+            ghost.move();
+        }
+        elapsedTime = System.currentTimeMillis() - startTime;
+        repaint(); // Force repaint every tick
     }
 }

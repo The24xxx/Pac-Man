@@ -12,7 +12,7 @@ public class Pacman {
     private int nextDirectionY;
     private Map map;
     private Points pointCounter;
-    private final int moveSpeed = 4; // Rychlost pohybu v pixelech
+    private final int moveSpeed = 2; // Rychlost pohybu v pixelech
     private double rotationAngle = 0; // Úhel rotace Pacmana
 
     public Pacman() {
@@ -45,13 +45,13 @@ public class Pacman {
     }
 
     public void setDirection(int directionX, int directionY) {
-        this.directionX = directionX;
-        this.directionY = directionY;
+        this.directionX = directionX * moveSpeed;
+        this.directionY = directionY * moveSpeed;
     }
 
     public void setNextDirection(int directionX, int directionY) {
-        this.nextDirectionX = directionX;
-        this.nextDirectionY = directionY;
+        this.nextDirectionX = directionX * moveSpeed;
+        this.nextDirectionY = directionY * moveSpeed;
     }
 
     public int getDirectionX() {
@@ -113,6 +113,18 @@ public class Pacman {
         int newPixelX = pixelX + directionX;
         int newPixelY = pixelY + directionY;
 
+        char[][] grid = map.getGrid();
+        int row = pixelY / tileSize;
+        if (grid[row][0] == ' ' && grid[row][grid[row].length - 1] == ' ') {
+            // Wrap around logic for rows starting and ending with ' '
+            if (newPixelX < 0) {  // Moving left past the left boundary
+                newPixelX = (grid[row].length - 1) * tileSize; // Wrap to the rightmost position of the row
+            } else if (newPixelX >= grid[row].length * tileSize) {  // Moving right past the right boundary
+                newPixelX = 0;  // Wrap to the leftmost position of the row
+            }
+        }
+
+
         // Check if the next direction is walkable
         int nextPixelX = pixelX + nextDirectionX;
         int nextPixelY = pixelY + nextDirectionY;
@@ -123,6 +135,8 @@ public class Pacman {
         // Ověření, zda je průchozí celá hitbox
         if (map.isWalkable(newPixelX, newPixelY)) {
             movePixel(directionX, directionY); // Pohyb Pacmana
+
+
             if (map.getTile(pixelX / tileSize, pixelY / tileSize) == ' ') {
                 pointCounter.increment(); // Increment the point counter
                 map.clearTile(pixelX, pixelY); // Clear the tile when Pacman moves over it

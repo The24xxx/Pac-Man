@@ -25,12 +25,12 @@ public class Game {
         GamePanel gamePanel = new GamePanel(map, pointCounter);
 
         frame.add(gamePanel);
-        frame.setSize(530, 550);
+        frame.setSize(map.getWidth() * 32 + 16, (map.getHeight() + 1) * 32 + 6);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setResizable(false);
 
-        new javax.swing.Timer(200, e -> {
+        new javax.swing.Timer(1000/60, e -> {
             System.out.println("Points: " + pointCounter.getPoints());
         }).start();
         
