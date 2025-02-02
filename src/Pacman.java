@@ -113,8 +113,19 @@ public class Pacman {
         int newPixelX = pixelX + directionX;
         int newPixelY = pixelY + directionY;
 
+        // Wrap around logic for rows starting and ending with ' '
+        
+        // this dont fcking work
         char[][] grid = map.getGrid();
-        int row = pixelY / tileSize;
+        int row = pixelY / tileSize + 1;
+        int col = pixelX / tileSize + 1;
+
+        //debugging
+        System.out.println("row: " + row);
+        System.out.println("col: " + col);
+
+
+
         if (grid[row][0] == ' ' && grid[row][grid[row].length - 1] == ' ') {
             // Wrap around logic for rows starting and ending with ' '
             if (newPixelX < 0) {  // Moving left past the left boundary

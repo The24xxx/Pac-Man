@@ -120,7 +120,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // draw points
         offscreenGraphics.setColor(Color.WHITE);
-        offscreenGraphics.drawString("Points: " + pointCounter.getPoints(), 10, 20);
+        offscreenGraphics.drawString("Points: " + pointCounter.getPoints(), 80, 20);
 
         //draw timer
         offscreenGraphics.drawString("Time: " + elapsedTime / 1000.0 + "s", 400, 20);

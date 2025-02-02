@@ -25,7 +25,7 @@ public class Game {
         GamePanel gamePanel = new GamePanel(map, pointCounter);
 
         frame.add(gamePanel);
-        frame.setSize(map.getWidth() * 32 + 16, (map.getHeight() + 1) * 32 + 6);
+        frame.setSize(map.getWidth() * 32 - 16, (map.getHeight() + 1) * 32 + 6);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setResizable(false);
@@ -34,12 +34,8 @@ public class Game {
             System.out.println("Points: " + pointCounter.getPoints());
         }).start();
         
-
-        // Testování pohybu
-        //pacman.move(1, 0);
-
-        // Vytisknutí mapy po pohybu
-        //printMap(map);
+        // Offset the game window by 32 pixels to the right
+        frame.setLocation(frame.getX() - 40, frame.getY());
     }
 
     // Pomocná metoda pro vypsání mapy
