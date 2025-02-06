@@ -90,7 +90,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // Projdi všechny sloupce a řádky gridu
         for (int y = 0; y < grid.length; y++) {
-            for (int x = 0; x < grid[y].length; x++) {
+            for (int x = 1; x < grid[y].length - 1; x++) {
                 char tile = grid[y][x];
                 Image img;
 
@@ -120,7 +120,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // draw points
         offscreenGraphics.setColor(Color.WHITE);
-        offscreenGraphics.drawString("Points: " + pointCounter.getPoints(), 80, 20);
+        offscreenGraphics.drawString("Points: " + pointCounter.getPoints(), 120, 20);
 
         //draw timer
         offscreenGraphics.drawString("Time: " + elapsedTime / 1000.0 + "s", 400, 20);
@@ -128,10 +128,34 @@ public class GamePanel extends JPanel implements KeyListener {
 
         // check if the dots were eaten
         if (map.countEmptySpaces() == 0) {
+            offscreenGraphics.setColor(Color.BLACK);
+            int boxWidth = 300;
+            int boxHeight = 100;
+            int x = (getWidth() - boxWidth) / 2;
+            int y = (getHeight() - boxHeight) / 2;
+            offscreenGraphics.fillRect(x, y, boxWidth, boxHeight);
             offscreenGraphics.setColor(Color.WHITE);
-            offscreenGraphics.drawString("You won!", 200, 20);
+            offscreenGraphics.drawRect(x, y, boxWidth, boxHeight);
+            offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(24f)); // Set font size to 24
+            offscreenGraphics.drawString("You won!", x + 100, y + 50);
+    
+            // Reset font size back to 12f for other text
+            offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(12f));
             gameTimer.stop();
         }
+
+        offscreenGraphics.setColor(Color.BLACK);
+        offscreenGraphics.fillRect(0, 0, 64, getHeight());
+        offscreenGraphics.setColor(Color.YELLOW);
+        offscreenGraphics.drawRect(0, 0, 64, getHeight());
+        offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(32f));
+        String text = "P\n \nA\n \nC\n \n-\n \nM\n \nA\n \nN";
+        String[] lines = text.split("\\n");
+        int textStartY = (getHeight() - (lines.length * 40)) / 2; // Centering
+        for (int i = 0; i < lines.length; i++) {
+            offscreenGraphics.drawString(lines[i], 15, textStartY + i * 40);
+        }
+        offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(12f));
 
         if (showTextBox) {
             // Draw the text box in the middle of the game map
@@ -158,6 +182,7 @@ public class GamePanel extends JPanel implements KeyListener {
         // Draw the offscreen image to the screen
         g.drawImage(offscreenImage, 0, 0, this);
     }
+    
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -195,4 +220,6 @@ public class GamePanel extends JPanel implements KeyListener {
         elapsedTime = System.currentTimeMillis() - startTime;
         repaint(); // Force repaint every tick
     }
+    
+        
 }

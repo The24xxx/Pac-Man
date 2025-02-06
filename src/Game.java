@@ -25,7 +25,8 @@ public class Game {
         GamePanel gamePanel = new GamePanel(map, pointCounter);
 
         frame.add(gamePanel);
-        frame.setSize(map.getWidth() * 32 - 16, (map.getHeight() + 1) * 32 + 6);
+        frame.setSize(map.getWidth() * 32 - 16, (map.getHeight() + 1) * 32 + 6 );
+        frame.setLocation(100, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setResizable(false);
@@ -48,3 +49,5 @@ public class Game {
         }
     }
 }
+
+

@@ -14,6 +14,8 @@ public class Pacman {
     private Points pointCounter;
     private final int moveSpeed = 2; // Rychlost pohybu v pixelech
     private double rotationAngle = 0; // Úhel rotace Pacmana
+    private boolean justTeleported = false;  // Prevents instant back-and-forth teleporting
+
 
     public Pacman() {
     }
@@ -113,27 +115,70 @@ public class Pacman {
         int newPixelX = pixelX + directionX;
         int newPixelY = pixelY + directionY;
 
-        // Wrap around logic for rows starting and ending with ' '
+    
         
-        // this dont fcking work
+        // this might do something
         char[][] grid = map.getGrid();
-        int row = pixelY / tileSize + 1;
-        int col = pixelX / tileSize + 1;
+        int row = pixelY / tileSize;
+        int col = pixelX / tileSize;
 
         //debugging
         System.out.println("row: " + row);
         System.out.println("col: " + col);
 
 
+        
 
-        if (grid[row][0] == ' ' && grid[row][grid[row].length - 1] == ' ') {
-            // Wrap around logic for rows starting and ending with ' '
-            if (newPixelX < 0) {  // Moving left past the left boundary
-                newPixelX = (grid[row].length - 1) * tileSize; // Wrap to the rightmost position of the row
-            } else if (newPixelX >= grid[row].length * tileSize) {  // Moving right past the right boundary
-                newPixelX = 0;  // Wrap to the leftmost position of the row
-            }
+        //wrap around logic: '+' to '-' and vice versa
+        //if pacman is on the wrap-around tile
+  // 🛑 Prevent Out of Bounds Errors
+if (row < 0 || row >= grid.length || col < 0 || col >= grid[row].length) {
+    System.out.println("ERROR: Pac-Man went out of bounds! row: " + row + ", col: " + col);
+    return;
+}
+
+// ✅ Prevent looping by checking if Pac-Man was just teleported
+if (!justTeleported) {
+    // 🌀 Wrap-around logic: Teleport Pac-Man from '+' to '-'
+// 🌀 Wrap-around logic: Teleport Pac-Man from '+' to '-'
+// Only teleport if Pac-Man has fully entered the '+' tile (middle or further)
+if (grid[row][col] == '+' && !justTeleported) {
+    for (int x = 0; x < grid[row].length; x++) {
+        if (grid[row][x] == '-') {
+            System.out.println("Teleporting Pac-Man from + to - at (" + row + ", " + x + ")");
+            pixelX = x * tileSize;
+            justTeleported = true;  // Mark teleport to prevent instant looping
+            return;
         }
+    }
+}
+
+// 🌀 Wrap-around logic: Teleport Pac-Man from '-' to '+'
+// Teleports instantly since this already looks correct
+if (grid[row][col] == '-' && !justTeleported) {
+    for (int x = 0; x < grid[row].length; x++) {
+        if (grid[row][x] == '+') {
+            System.out.println("Teleporting Pac-Man from - to + at (" + row + ", " + x + ")");
+            pixelX = x * tileSize;
+            justTeleported = true;  // Mark teleport to prevent instant looping
+            return;
+        }
+    }
+}
+
+// ✅ Reset teleport flag once Pac-Man moves away from teleport tiles
+if (grid[row][col] != '+' && grid[row][col] != '-') {
+    justTeleported = false;
+}
+
+}
+
+// ✅ Reset teleport flag when Pac-Man moves away from the teleport tiles
+if (grid[row][col] != '+' && grid[row][col] != '-') {
+    justTeleported = false;
+}
+
+
 
 
         // Check if the next direction is walkable
