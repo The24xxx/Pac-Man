@@ -53,7 +53,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         //create ghost instance
         ghosts = new ArrayList<>();
-        for (int i = 0; i < 4; i++) { //add 4 ghosts
+        for (int i = 0; i < 6; i++) { //add 4 ghosts
             ghosts.add(new Ghosts(map, ghostBlueImage));
         }
 

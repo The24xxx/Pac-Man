@@ -1,5 +1,7 @@
 import java.awt.Graphics;
 import java.awt.Image;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Ghosts {
@@ -44,7 +46,12 @@ public class Ghosts {
             pixelX = newPixelX;
             pixelY = newPixelY;
         } else {
-            setRandomDirection();
+            chooseNewDirection();
+        }
+
+        // Always choose a new direction at intersections
+        if (isAtIntersection()) {
+            chooseNewDirection();
         }
     }
 
@@ -66,16 +73,49 @@ public class Ghosts {
         }
     }
 
+    private void chooseNewDirection() {
+        List<int[]> possibleDirections = new ArrayList<>();
+
+        if (map.isWalkable(pixelX + moveSpeed, pixelY) && directionX != -moveSpeed) {
+            possibleDirections.add(new int[]{moveSpeed, 0});
+        }
+        if (map.isWalkable(pixelX - moveSpeed, pixelY) && directionX != moveSpeed) {
+            possibleDirections.add(new int[]{-moveSpeed, 0});
+        }
+        if (map.isWalkable(pixelX, pixelY + moveSpeed) && directionY != -moveSpeed) {
+            possibleDirections.add(new int[]{0, moveSpeed});
+        }
+        if (map.isWalkable(pixelX, pixelY - moveSpeed) && directionY != moveSpeed) {
+            possibleDirections.add(new int[]{0, -moveSpeed});
+        }
+
+        if (!possibleDirections.isEmpty()) {
+            int[] newDirection = possibleDirections.get(random.nextInt(possibleDirections.size()));
+            directionX = newDirection[0];
+            directionY = newDirection[1];
+        } else {
+            // No other direction possible, reverse
+            directionX = -directionX;
+            directionY = -directionY;
+        }
+    }
+
+    private boolean isAtIntersection() {
+        int paths = 0;
+
+        if (map.isWalkable(pixelX + moveSpeed, pixelY)) paths++;
+        if (map.isWalkable(pixelX - moveSpeed, pixelY)) paths++;
+        if (map.isWalkable(pixelX, pixelY + moveSpeed)) paths++;
+        if (map.isWalkable(pixelX, pixelY - moveSpeed)) paths++;
+
+        return paths >= 3; // Consider an intersection if there are three or more paths
+    }
+
     private void setRandomDirection() {
         int[] directions = {-moveSpeed, 0, moveSpeed};
-        directionX = directions[random.nextInt(3)];
-        directionY = directions[random.nextInt(3)];
-
-        // Ensure the ghost moves in one direction at a time
-        if (directionX != 0) {
-            directionY = 0;
-        } else if (directionY != 0) {
-            directionX = 0;
-        }
+        do {
+            directionX = directions[random.nextInt(3)];
+            directionY = directions[random.nextInt(3)];
+        } while (directionX == 0 && directionY == 0);
     }
 }
