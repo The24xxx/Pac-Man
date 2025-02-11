@@ -158,7 +158,7 @@ if (grid[row][col] == '+' && !justTeleported) {
 if (grid[row][col] == '-' && !justTeleported) {
     for (int x = 0; x < grid[row].length; x++) {
         if (grid[row][x] == '+') {
-            System.out.println("Teleporting Pac-Man from - to + at (" + row + ", " + x + ")");
+            //System.out.println("Teleporting Pac-Man from - to + at (" + row + ", " + x + ")");
             pixelX = x * tileSize;
             justTeleported = true;  // Mark teleport to prevent instant looping
             return;
