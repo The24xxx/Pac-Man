@@ -123,8 +123,8 @@ public class Pacman {
         int col = pixelX / tileSize;
 
         //debugging
-        System.out.println("row: " + row);
-        System.out.println("col: " + col);
+        //System.out.println("row: " + row);
+        //System.out.println("col: " + col);
 
 
         
@@ -139,13 +139,13 @@ if (row < 0 || row >= grid.length || col < 0 || col >= grid[row].length) {
 
 // ✅ Prevent looping by checking if Pac-Man was just teleported
 if (!justTeleported) {
-    // 🌀 Wrap-around logic: Teleport Pac-Man from '+' to '-'
+
 // 🌀 Wrap-around logic: Teleport Pac-Man from '+' to '-'
 // Only teleport if Pac-Man has fully entered the '+' tile (middle or further)
 if (grid[row][col] == '+' && !justTeleported) {
     for (int x = 0; x < grid[row].length; x++) {
         if (grid[row][x] == '-') {
-            System.out.println("Teleporting Pac-Man from + to - at (" + row + ", " + x + ")");
+            //System.out.println("Teleporting Pac-Man from + to - at (" + row + ", " + x + ")");
             pixelX = x * tileSize;
             justTeleported = true;  // Mark teleport to prevent instant looping
             return;

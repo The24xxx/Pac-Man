@@ -15,9 +15,9 @@ public class Game {
         // Vytisknutí mapy před pohybem
         //printMap(map);
 
-        if (map.isWalkable(1, 1)) {
-            System.out.println("Tile [1; 1] is walkable");
-        } 
+        // if (map.isWalkable(1, 1)) {
+        //     System.out.println("Tile [1; 1] is walkable");
+        // } 
 
 
         // Vytvoření okna pro hru
@@ -31,9 +31,9 @@ public class Game {
         frame.setVisible(true);
         frame.setResizable(false);
 
-        new javax.swing.Timer(1000/60, e -> {
-            System.out.println("Points: " + pointCounter.getPoints());
-        }).start();
+        // new javax.swing.Timer(1000/60, e -> {
+        //     System.out.println("Points: " + pointCounter.getPoints());
+        // }).start();
         
         // Offset the game window by 32 pixels to the right
         frame.setLocation(frame.getX() - 40, frame.getY());

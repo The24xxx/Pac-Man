@@ -29,6 +29,7 @@ public class GamePanel extends JPanel implements KeyListener {
     private boolean timerStarted = false;
     private List<Ghosts> ghosts;
     private boolean showTextBox = true;  // Flag to show/hide the text box
+    private boolean gameOver = false; //flag to show game over screen
 
     public GamePanel(Map map, Points pointCounter) {
         this.map = map;
@@ -53,7 +54,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
         //create ghost instance
         ghosts = new ArrayList<>();
-        for (int i = 0; i < 6; i++) { //add 4 ghosts
+        for (int i = 0; i < 4; i++) { //add 4 ghosts
             ghosts.add(new Ghosts(map, ghostBlueImage));
         }
 
@@ -65,11 +66,31 @@ public class GamePanel extends JPanel implements KeyListener {
             pacman.move(map);
             for (Ghosts ghost : ghosts) {
                 ghost.move();
+                if (checkCollision(pacman, ghost)) {
+                    System.out.println("Collision detected");
+                    gameOver = true;
+                    gameTimer.stop();
+                    repaint();
+                    return;
+                }
             }
             elapsedTime = System.currentTimeMillis() - startTime;
             repaint();
         }); // Aktualizace každých 16 ms (~60 FPS)
     }
+
+    // check collision with ghosts
+    private boolean checkCollision(Pacman pacman, Ghosts ghost) {
+        int pacmanX = pacman.getPixelX();
+        int pacmanY = pacman.getPixelY();
+        int ghostX = ghost.getPixelX();
+        int ghostY = ghost.getPixelY();
+
+        int threshold = 28; // Collision threshold
+
+        return Math.abs(pacmanX - ghostX) < threshold && Math.abs(pacmanY - ghostY) < threshold;
+    }
+
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -144,6 +165,21 @@ public class GamePanel extends JPanel implements KeyListener {
             gameTimer.stop();
         }
 
+        // Draw game over screen
+        if (gameOver) {
+            offscreenGraphics.setColor(Color.BLACK);
+            int boxWidth = 300;
+            int boxHeight = 100;
+            int x = (getWidth() - boxWidth) / 2;
+            int y = (getHeight() - boxHeight) / 2;
+            offscreenGraphics.fillRect(x, y, boxWidth, boxHeight);
+            offscreenGraphics.setColor(Color.RED);
+            offscreenGraphics.drawRect(x, y, boxWidth, boxHeight);
+            offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(24f)); // Set font size to 24
+            offscreenGraphics.drawString("Game Over!", x + 90 , y + 60);
+        }
+
+
         offscreenGraphics.setColor(Color.BLACK);
         offscreenGraphics.fillRect(0, 0, 64, getHeight());
         offscreenGraphics.setColor(Color.YELLOW);
@@ -182,6 +218,7 @@ public class GamePanel extends JPanel implements KeyListener {
         // Draw the offscreen image to the screen
         g.drawImage(offscreenImage, 0, 0, this);
     }
+
     
 
     @Override
