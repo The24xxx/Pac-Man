@@ -30,6 +30,7 @@ public class GamePanel extends JPanel implements KeyListener {
     private List<Ghosts> ghosts;
     private boolean showTextBox = true;  // Flag to show/hide the text box
     private boolean gameOver = false; //flag to show game over screen
+    private boolean gameWon = false; //flag to show game won screen
 
     public GamePanel(Map map, Points pointCounter) {
         this.map = map;
@@ -67,7 +68,7 @@ public class GamePanel extends JPanel implements KeyListener {
             for (Ghosts ghost : ghosts) {
                 ghost.move();
                 if (checkCollision(pacman, ghost)) {
-                    System.out.println("Collision detected");
+                    //System.out.println("Collision detected");
                     gameOver = true;
                     gameTimer.stop();
                     repaint();
@@ -89,6 +90,22 @@ public class GamePanel extends JPanel implements KeyListener {
         int threshold = 28; // Collision threshold
 
         return Math.abs(pacmanX - ghostX) < threshold && Math.abs(pacmanY - ghostY) < threshold;
+    }
+
+    // reset game after Game Over
+    private void resetGame() {
+        this.map.resetGrid();
+        this.pointCounter = new Points();
+        pacman = new Pacman(this.map, this.pointCounter);
+        ghosts.clear();
+        for (int i = 0; i < 4; i++) {
+            ghosts.add(new Ghosts(map, ghostBlueImage));
+        }
+        elapsedTime = 0;
+        gameOver = false;
+        timerStarted = false;
+        showTextBox = true;
+        repaint();
     }
 
 
@@ -159,6 +176,9 @@ public class GamePanel extends JPanel implements KeyListener {
             offscreenGraphics.drawRect(x, y, boxWidth, boxHeight);
             offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(24f)); // Set font size to 24
             offscreenGraphics.drawString("You won!", x + 100, y + 50);
+            offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(12f));
+            offscreenGraphics.drawString("Press 'R' to play again", x + 89, y + 80);
+            gameWon = true;
     
             // Reset font size back to 12f for other text
             offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(12f));
@@ -176,7 +196,10 @@ public class GamePanel extends JPanel implements KeyListener {
             offscreenGraphics.setColor(Color.RED);
             offscreenGraphics.drawRect(x, y, boxWidth, boxHeight);
             offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(24f)); // Set font size to 24
-            offscreenGraphics.drawString("Game Over!", x + 90 , y + 60);
+            offscreenGraphics.drawString("Game Over!", x + 85 , y + 50);
+            offscreenGraphics.setFont(offscreenGraphics.getFont().deriveFont(12f));
+            offscreenGraphics.drawString("Press 'R' to play again", x + 89, y + 80);
+            gameTimer.stop();
         }
 
 
@@ -226,13 +249,17 @@ public class GamePanel extends JPanel implements KeyListener {
         // Hide the text box and start the timer when an arrow key is pressed
         if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN ||
             e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            if (!timerStarted) {
+            if (!timerStarted && !gameOver) {
                 startTime = System.currentTimeMillis();
                 gameTimer.start();
                 timerStarted = true;
             }
             showTextBox = false;
             repaint();
+        }
+
+        if ((gameOver | gameWon) && e.getKeyCode() == KeyEvent.VK_R) {
+            resetGame();
         }
 
         pacman.handleKeyPressed(e);

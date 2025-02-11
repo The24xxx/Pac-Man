@@ -1,6 +1,9 @@
+
+
 public class Map {
 
     private char[][] grid;
+    private char[][] initialGrid;
 
     public Map() {
         // inicializace mapy
@@ -31,6 +34,12 @@ public class Map {
             {'#','#','#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', '#', '#'},
             {'#','#','#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
         };
+
+        // store the initial state of the map
+        initialGrid = new char[grid.length][grid[0].length];
+        for (int i = 0; i < grid.length; i++) {
+           System.arraycopy(grid[i], 0, initialGrid[i], 0, grid[i].length);
+        }
     }
 
     public boolean isWalkable(int pixelX, int pixelY) {
@@ -81,6 +90,12 @@ public class Map {
         int tileY = pixelY / tileSize;
         if (grid[tileY][tileX] == ' ') {
             grid[tileY][tileX] = '.';
+        }
+    }
+
+    public void resetGrid() {
+        for (int i = 0; i < initialGrid.length; i++) {
+            System.arraycopy(initialGrid[i], 0, grid[i], 0, initialGrid[i].length);
         }
     }
 
